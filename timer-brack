@@ -12,7 +12,7 @@ setInterval(function time(){
   //console.log(d.getHours()+'===='+d.getDate())
    var newd = d.getTime()  - 32400000
   var currentDate = new Date(newd);   
-​
+
   var hours = 24 - currentDate.getHours();
   var min = 60 - currentDate.getMinutes();
   if((min + '').length == 1){
@@ -25,12 +25,9 @@ setInterval(function time(){
   
   jQuery('#the-final-countdown p').html(hours+':'+min+':'+sec)
  console.log(currentDate.getHours()+'===='+currentDate.getMinutes())
-​
-​
+
 }, 1000);
-​
-​
-​
+
 </script>
 <style type="text/css">#the-final-countdown {
   background: #333;
@@ -42,4 +39,3 @@ setInterval(function time(){
   font-size: 3rem;
   border: 1px solid #000;
 }</style>
-
