@@ -1,0 +1,90 @@
+{% for tag in product.tags %}
+{%- assign product_tag = tag -%}
+{% endfor %}
+{% if product_tag contains 'Discontinued' %}
+<p class="discontinued">You con't perchance</p>
+{%else%}
+<div class="dev_addTocart">
+  <div class="collection_addcart">
+    <form method="post" action="/cart/add">
+      {% if product.available %}
+      <div class="qtydiv">
+        <div class="qtybox">
+          <span class="custom_quant_bg">
+            <span class="btnqty qtyminus icon icon-minus">-</span>
+          </span>
+          <input type="text" value-quant="1" id="quantity" name="quantity" value="1" min="1" class="quantity-selector quantity-input" readonly="">
+          <span class="custom_quant_bg">
+            <span class="btnqty qtyplus icon icon-plus">+</span>
+          </span>
+        </div>
+      </div>
+      <input class="varint_num" type="hidden" name="id" />
+      <input type="submit" value="ADD TO CART" v-id="{{ product.variants.first.id }}" q-value="1" class="btn custom_add_btn" />
+      {%else%}
+      <input type="submit" value="SOLD OUT"  class="btn sold_out_btn" />
+      {%endif%}
+    </form>
+  </div>
+</div>
+{%endif%}
+
+
+<style>
+.sold_out_btn {pointer-events: none;}
+.custom_quant_bg {padding: 5px 5px 5px 5px;background: #1e1c1c;text-align: center;padding-top: 5px;color: white;}
+.qtydiv .btnqty{display: inline-block;cursor: pointer;user-select: none;}
+.qtydiv .quantity-input{text-align: center;width: 50px;height: 30px;outline: none;display: inline-block;}
+.qtydiv {display: inline-block;}
+  
+</style>
+
+
+
+ <script>
+    $( document ).ready(function() {
+      //     Quantity box change
+      $('.qtybox .btnqty').on('click', function(){
+        var qty = parseInt($(this).parent().parent('.qtybox').find('.quantity-input').val());
+        if($(this).hasClass('qtyplus')) {
+          qty++;
+        }else {
+          if(qty > 1) {
+            qty--;
+          }
+        }
+        qty = (isNaN(qty))?1:qty;
+        $(this).parent().parent('.qtybox').find('.quantity-input').val(qty);
+        $(this).parent().parent('.qtybox').find('.quantity-input').attr("value-quant", qty);
+        $(this).parent().parent().parent().parent('form').find('.custom_add_btn').attr("q-value", qty);
+        //       End code quantity box;
+        //     Add to cart ajax
+        $(".dev_addTocart .custom_add_btn").click(function(e){
+          e.preventDefault();
+          var v_id=$(this).attr("v-id");
+          var qiantity=$(this).attr("q-value");
+          data = {
+            "id": v_id,
+            "quantity": qiantity
+          }
+          jQuery.ajax({
+            type: 'POST',
+            url: '/cart/add.js',
+            data: data,
+            dataType: 'json',
+            success: function() { 
+              setTimeout(function(){
+                jQuery.getJSON('/cart.js', function(cart) {
+                  var quant=cart.item_count;
+                  $(".site-header__cart-count").removeClass("hide");
+                  $(".site-header__cart-count").removeClass("critical-hidden");
+                  $(".site-header__cart-count").text(quant);
+                } );
+              }, 1000);
+            }
+          });
+        });
+
+      }); 
+    });
+</script>
